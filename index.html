@@ -1,26 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9</title>
-
+  trackjs error track
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "db70e0a9954e43b3a32ccd926dd26c45"
+      
+    });
+  </script>
+  
   <style>
     button {
       margin: 3px;
     }
-
     button:hover {
       cursor: pointer;
     }
-
     #first-num,
     #second-num {
       width: 60px;
     }
-
     output {
       border: 1px solid gray;
       display: block;
@@ -29,11 +33,9 @@
       padding: 5px;
       width: 240px;
     }
-
     main {
       width: 800px;
     }
-
     #error-btns {
       column-gap: 5px;
       display: flex;
@@ -41,14 +43,12 @@
       margin-top: 30px;
       row-gap: 5px;
     }
-
     #error-btns>* {
       padding: 8px 2px;
       width: 122px;
     }
   </style>
 </head>
-
 <body>
   <main>
     <form>
@@ -67,7 +67,6 @@
         <output></output>
       </fieldset>
     </form>
-
     <section id="error-btns">
       <button>Console Log</button>
       <button>Console Error</button>
@@ -86,23 +85,251 @@
       <button>Trigger a Global Error</button>
     </section>
   </main>
-
   <script>
+  add buttons for the testing
+    // Sample data for console demos
+    const sampleData = [
+      { name: 'John Pork', age: 19 },
+      { name: 'John Undertale', age: 35 },
+      { name: 'John Cena', age: 48 }
+    ];
+
+    let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+    
+    // add functionality to each button for console methods
+    errorBtns.forEach(button => {
+      button.addEventListener('click', () => {
+        const buttonText = button.textContent;
+        
+        switch(buttonText) {
+          case 'Console Log':
+            console.log('This is a console.log message', { data: 'sample' });
+            break;
+          case 'Console Error':
+            console.error('This is a console.error message', new Error('Sample error'));
+            break;
+          case 'Console Count':
+            if (typeof console.count === 'function') {
+              console.count('Count');
+            } else {
+              console.log('console.count not available - Count: 1');
+            }
+            break;
+          case 'Console Warn':
+            console.warn('This is a console.warn message');
+            break;
+          case 'Console Assert':
+            if (typeof console.assert === 'function') {
+              console.assert(false, 'This assertion failed!');
+            } else {
+              console.log('console.assert not available - Assertion would fail: This assertion failed!');
+            }
+            break;
+          case 'Console Clear':
+            if (typeof console.clear === 'function') {
+              console.clear();
+            } else {
+              console.log('console.clear not available - Would clear console here');
+            }
+            break;
+          case 'Console Dir':
+            if (typeof console.dir === 'function') {
+              console.dir(document.body);
+            } else {
+              console.log('console.dir not available - Object:', document.body);
+            }
+            break;
+          case 'Console dirxml':
+            if (typeof console.dirxml === 'function') {
+              console.dirxml(document.querySelector('main'));
+            } else {
+              console.log('console.dirxml not available - Element:', document.querySelector('main'));
+            }
+            break;
+          case 'Console Group Start':
+            if (typeof console.group === 'function') {
+              console.group('My Group');
+              console.log('Message inside group');
+            } else {
+              console.log('=== My Group ===');
+              console.log('Message inside group');
+            }
+            break;
+          case 'Console Group End':
+            if (typeof console.groupEnd === 'function') {
+              console.groupEnd();
+            } else {
+              console.log('=== End Group ===');
+            }
+            break;
+          case 'Console Table':
+            if (typeof console.table === 'function') {
+              console.table(sampleData);
+            } else {
+              console.log('console.table not available - Data:', sampleData);
+            }
+            break;
+          case 'Start Timer':
+            if (typeof console.time === 'function') {
+              console.time('myTimer');
+            } else {
+              window.timerStart = Date.now();
+              console.log('Timer started (using Date.now fallback)');
+            }
+            break;
+          case 'End Timer':
+            if (typeof console.timeEnd === 'function') {
+              console.timeEnd('myTimer');
+            } else {
+              if (window.timerStart) {
+                console.log('Timer ended: ' + (Date.now() - window.timerStart) + 'ms');
+              } else {
+                console.log('No timer was started');
+              }
+            }
+            break;
+          case 'Console Trace':
+            if (typeof console.trace === 'function') {
+              console.trace('Trace message');
+            } else {
+              console.log('console.trace not available - Stack trace would appear here');
+            }
+            break;
+          case 'Trigger a Global Error':
+            step 5 - gloval error
+            nonExistentFunction();
+            break;
+        }
+      });
+    });
+
+    //try/catch
+    // original calculator with try/catch/finally added
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
-      let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      try {
+        let output = document.querySelector('output');
+        let firstNum = document.querySelector('#first-num').value;
+        let secondNum = document.querySelector('#second-num').value;
+        let operator = document.querySelector('#operator').value;
+        
+        // commenting out a DOM element or invalid input
+        if (!firstNum || !secondNum) {
+          throw new Error('Please enter both numbers');
+        }
+        
+        if (operator === '/' && secondNum === '0') {
+          throw new Error('Cannot divide by zero');
+        }
+        
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch (error) {
+        document.querySelector('output').innerHTML = 'Error: ' + error.message;
+        console.error('Calculator error:', error);
+      } finally {
+        console.log('Calculation attempt completed');
+      }
     });
 
-    let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+    // try/catch example function
+    function testTryCatch() {
+      try {
+        let result = riskyOperation();
+        console.log('Success:', result);
+      } catch (error) {
+        console.error('Caught error:', error.message);
+      } finally {
+        console.log('Finally block executed');
+      }
+    }
 
-    // Start your code here
-    // You may move this JS to another file if you wish
+    function riskyOperation() {
+      if (Math.random() > 0.5) {
+        throw new Error('Random error occurred');
+      }
+      return 'Operation successful';
+    }
+
+    
+    // custom error
+    // Custom Error class extending Error object
+    class CustomError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = 'CustomError';
+      }
+    }
+
+    // another custom error example
+    class ValidationError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = 'ValidationError';
+      }
+    }
+
+    // function demonstrating custom error usage
+    function testCustomError() {
+      try {
+        throw new CustomError('This is a custom error');
+      } catch (error) {
+        if (error instanceof CustomError) {
+          console.log('Caught custom error:', error.message);
+        }
+      }
+    }
+
+    // more realistic custom error example
+    function validateAge(age) {
+      try {
+        if (age < 0) {
+          throw new ValidationError('Age cannot be negative');
+        }
+        if (age > 150) {
+          throw new ValidationError('Age seems unrealistic');
+        }
+        console.log('Age is valid:', age);
+      } catch (error) {
+        if (error instanceof ValidationError) {
+          console.error('Validation failed:', error.message);
+        }
+      }
+    }
+
+    
+    
+    // global error handler using window.onerror
+    window.onerror = function(message, filename, lineno, colno, error) {
+      console.log('Global error caught:', message);
+      console.log('File:', filename, 'Line:', lineno, 'Column:', colno);
+      return true; // Prevent default browser error handling
+    };
+
+    // alternative global error handler using addEventListener
+    window.addEventListener('error', function(event) {
+      console.log('Global error (addEventListener):', {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno,
+        error: event.error
+      });
+    });
+
+    // unhandled promise rejection handler
+    window.addEventListener('unhandledrejection', function(event) {
+      console.log('Unhandled promise rejection:', event.reason);
+      event.preventDefault();
+    });
+
+    
+    
+    // run Step 3 and Step 4 examples when page loads
+    testTryCatch();
+    testCustomError();
+    validateAge(-5); // This will trigger ValidationError
+    validateAge(25); // This will pass validation
   </script>
 </body>
-
 </html>
